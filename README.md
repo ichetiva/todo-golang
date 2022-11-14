@@ -41,7 +41,7 @@ go mod tidy
 go run ./cmd/app
 ```
 or\
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. Build project:
+&nbsp;&nbsp;&nbsp;&nbsp;4. Build project:
 ```
 Windows:
     go build -o ./bin/app.exe ./cmd/app
