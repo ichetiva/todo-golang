@@ -10,6 +10,14 @@ import (
 	"github.com/ichetiva/todo-golang/internal/use_cases/server"
 )
 
+// @title       Todo API
+// @version     1.0
+// @description Simple todo API
+
+// @license.name MIT
+
+// @host     localhost:8080
+// @BasePath /api/v1
 func main() {
 	server := server.Server{
 		Addr:         ":8080",

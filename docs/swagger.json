@@ -1,0 +1,105 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Simple todo API",
+        "title": "Todo API",
+        "contact": {},
+        "license": {
+            "name": "MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/todo": {
+            "get": {
+                "description": "Get todo from database",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "todo"
+                ],
+                "summary": "Get todo",
+                "responses": {}
+            }
+        },
+        "/todo/all": {
+            "get": {
+                "description": "Get all todos from database",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "todo"
+                ],
+                "summary": "Get all todos",
+                "responses": {}
+            }
+        },
+        "/todo/create": {
+            "post": {
+                "description": "Add todo to database with data which contains content",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "todo"
+                ],
+                "summary": "Add todo",
+                "responses": {}
+            }
+        },
+        "/todo/delete": {
+            "delete": {
+                "description": "Delete todo from database with data which contains id",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "todo"
+                ],
+                "summary": "Delete todo",
+                "responses": {}
+            }
+        },
+        "/todo/done": {
+            "get": {
+                "description": "Get todos which marked as done",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "todo"
+                ],
+                "summary": "Get done todos",
+                "responses": {}
+            },
+            "put": {
+                "description": "Mark todo as done with data which contains id",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "todo"
+                ],
+                "summary": "Done todo",
+                "responses": {}
+            }
+        },
+        "/todo/notDone": {
+            "get": {
+                "description": "Get todos which not marked as done",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "todo"
+                ],
+                "summary": "Get not done todos",
+                "responses": {}
+            }
+        }
+    }
+}

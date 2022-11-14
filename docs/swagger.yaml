@@ -1,0 +1,73 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact: {}
+  description: Simple todo API
+  license:
+    name: MIT
+  title: Todo API
+  version: "1.0"
+paths:
+  /todo:
+    get:
+      consumes:
+      - application/json
+      description: Get todo from database
+      responses: {}
+      summary: Get todo
+      tags:
+      - todo
+  /todo/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all todos from database
+      responses: {}
+      summary: Get all todos
+      tags:
+      - todo
+  /todo/create:
+    post:
+      consumes:
+      - application/json
+      description: Add todo to database with data which contains content
+      responses: {}
+      summary: Add todo
+      tags:
+      - todo
+  /todo/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete todo from database with data which contains id
+      responses: {}
+      summary: Delete todo
+      tags:
+      - todo
+  /todo/done:
+    get:
+      consumes:
+      - application/json
+      description: Get todos which marked as done
+      responses: {}
+      summary: Get done todos
+      tags:
+      - todo
+    put:
+      consumes:
+      - application/json
+      description: Mark todo as done with data which contains id
+      responses: {}
+      summary: Done todo
+      tags:
+      - todo
+  /todo/notDone:
+    get:
+      consumes:
+      - application/json
+      description: Get todos which not marked as done
+      responses: {}
+      summary: Get not done todos
+      tags:
+      - todo
+swagger: "2.0"

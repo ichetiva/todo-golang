@@ -13,6 +13,11 @@ type Controller struct {
 	Config *config.Config
 }
 
+// @summary     Add todo
+// @description Add todo to database with data which contains content
+// @tags        todo
+// @accept      json
+// @router      /todo/create [post]
 func (c *Controller) AddTodo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -53,6 +58,11 @@ func (c *Controller) AddTodo(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(data))
 }
 
+// @summary     Done todo
+// @description Mark todo as done with data which contains id
+// @tags        todo
+// @accept      json
+// @router      /todo/done [put]
 func (c *Controller) DoneTodo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -91,6 +101,11 @@ func (c *Controller) DoneTodo(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(data))
 }
 
+// @summary     Delete todo
+// @description Delete todo from database with data which contains id
+// @tags        todo
+// @accept      json
+// @router      /todo/delete [delete]
 func (c *Controller) DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -124,6 +139,11 @@ func (c *Controller) DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(data))
 }
 
+// @summary     Get todo
+// @description Get todo from database
+// @tags        todo
+// @accept      json
+// @router      /todo [get]
 func (c *Controller) GetTodo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -154,6 +174,11 @@ func (c *Controller) GetTodo(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(data))
 }
 
+// @summary     Get all todos
+// @description Get all todos from database
+// @tags        todo
+// @accept      json
+// @router      /todo/all [get]
 func (c *Controller) GetAllTodos(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -189,6 +214,11 @@ func (c *Controller) GetAllTodos(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(data))
 }
 
+// @summary     Get done todos
+// @description Get todos which marked as done
+// @tags        todo
+// @accept      json
+// @router      /todo/done [get]
 func (c *Controller) GetDoneTodos(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -224,6 +254,11 @@ func (c *Controller) GetDoneTodos(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(data))
 }
 
+// @summary     Get not done todos
+// @description Get todos which not marked as done
+// @tags        todo
+// @accept      json
+// @router      /todo/notDone [get]
 func (c *Controller) GetNotDoneTodos(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
