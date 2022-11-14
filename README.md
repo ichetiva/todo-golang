@@ -5,7 +5,7 @@ Architecture:
 │
 ├───cmd
 │   └───app
-│       └───main.go        - Main file which will be running
+│       └───main.go           - Main file which will be running
 ├───config
 │   ├───config.go             - Loading config from config.yml
 │   └───config.yml            - Config file
