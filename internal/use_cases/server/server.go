@@ -5,7 +5,10 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/ichetiva/todo-golang/config"
 	"github.com/ichetiva/todo-golang/internal/routes"
+	"github.com/ichetiva/todo-golang/pkg/postgres"
+	"github.com/ichetiva/todo-golang/pkg/postgres/models"
 )
 
 type Server struct {
@@ -14,8 +17,8 @@ type Server struct {
 	WriteTimeout time.Duration
 }
 
-func (s *Server) Run() error {
-	router := s.GetRouter()
+func (s *Server) Run(cfg *config.Config) error {
+	router := s.GetRouter(cfg)
 
 	server := &http.Server{
 		Addr:         s.Addr,
@@ -23,15 +26,22 @@ func (s *Server) Run() error {
 		ReadTimeout:  s.ReadTimeout,
 		WriteTimeout: s.WriteTimeout,
 	}
-	err := server.ListenAndServe()
+
+	db, err := postgres.GetDatabase(cfg)
+	if err != nil {
+		return err
+	}
+	db.AutoMigrate(&models.Todo{})
+
+	err = server.ListenAndServe()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *Server) GetRouter() *mux.Router {
+func (s *Server) GetRouter(cfg *config.Config) *mux.Router {
 	router := mux.NewRouter()
-	routes.TodoRoute(router)
+	routes.TodoRoute(router, cfg)
 	return router
 }
