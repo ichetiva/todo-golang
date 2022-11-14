@@ -1,6 +1,6 @@
 # Simple todo written in Go with net/http
 
-Architecture:
+## Architecture:
 ```
 │
 ├───cmd
