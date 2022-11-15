@@ -5,40 +5,40 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/ichetiva/todo-golang/config"
-	"github.com/ichetiva/todo-golang/internal/controllers/todo"
+	"github.com/ichetiva/todo-golang/internal/controllers/tasks"
 )
 
-func TodoRoute(router *mux.Router, cfg *config.Config) {
-	controller := todo.Controller{
+func TaskRoute(router *mux.Router, cfg *config.Config) {
+	controller := tasks.Controller{
 		Config: cfg,
 	}
 
-	// Get todo by id /api/v1/todo?id=1
+	// Get task by id /api/v1/task?id=1
 	router.HandleFunc(
-		"/api/v1/todo", controller.GetTodo,
+		"/api/v1/task", controller.GetTask,
 	).Methods(http.MethodGet)
-	// Get all todos
+	// Get all tasks
 	router.HandleFunc(
-		"/api/v1/todo/all", controller.GetAllTodos,
+		"/api/v1/task/all", controller.GetAllTasks,
 	).Methods(http.MethodGet)
-	// Get done todos
+	// Get done tasks
 	router.HandleFunc(
-		"/api/v1/todo/done", controller.GetDoneTodos,
+		"/api/v1/task/done", controller.GetDoneTasks,
 	).Methods(http.MethodGet)
-	// Get not done todos
+	// Get not done tasks
 	router.HandleFunc(
-		"/api/v1/todo/notDone", controller.GetNotDoneTodos,
+		"/api/v1/task/notDone", controller.GetNotDoneTasks,
 	).Methods(http.MethodGet)
-	// Create todo
+	// Create task
 	router.HandleFunc(
-		"/api/v1/todo/create", controller.AddTodo,
+		"/api/v1/task/create", controller.AddTask,
 	).Methods(http.MethodPost)
-	// Mark todo as done
+	// Mark task as done
 	router.HandleFunc(
-		"/api/v1/todo/done", controller.DoneTodo,
+		"/api/v1/task/done", controller.DoneTask,
 	).Methods(http.MethodPut)
-	// Delete todo
+	// Delete task
 	router.HandleFunc(
-		"/api/v1/todo/delete", controller.DeleteTodo,
+		"/api/v1/task/delete", controller.DeleteTask,
 	).Methods(http.MethodDelete)
 }

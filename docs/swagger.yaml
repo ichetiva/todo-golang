@@ -1,4 +1,24 @@
 basePath: /api/v1
+definitions:
+  tasks.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  tasks.Task:
+    properties:
+      content:
+        type: string
+      done:
+        type: boolean
+      id:
+        type: integer
+    type: object
+  tasks.TaskResponse:
+    properties:
+      data:
+        $ref: '#/definitions/tasks.Task'
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -8,66 +28,163 @@ info:
   title: Todo API
   version: "1.0"
 paths:
-  /todo:
+  /task:
     get:
       consumes:
       - application/json
-      description: Get todo from database
-      responses: {}
-      summary: Get todo
+      description: Get task from database
+      parameters:
+      - description: Task identifer
+        in: query
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tasks.TaskResponse'
+        "502":
+          description: Get task failed
+          schema:
+            $ref: '#/definitions/tasks.ErrorResponse'
+      summary: Get task
       tags:
-      - todo
-  /todo/all:
+      - tasks
+  /task/all:
     get:
       consumes:
       - application/json
-      description: Get all todos from database
-      responses: {}
-      summary: Get all todos
+      description: Get all tasks from database
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tasks.TaskResponse'
+        "502":
+          description: Get all tasks failed
+          schema:
+            $ref: '#/definitions/tasks.ErrorResponse'
+      summary: Get all tasks
       tags:
-      - todo
-  /todo/create:
+      - tasks
+  /task/create:
     post:
       consumes:
       - application/json
-      description: Add todo to database with data which contains content
-      responses: {}
-      summary: Add todo
+      description: Add task to database with data which contains content
+      parameters:
+      - description: Task content
+        in: body
+        name: content
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tasks.TaskResponse'
+        "400":
+          description: Non-valid data
+          schema:
+            $ref: '#/definitions/tasks.ErrorResponse'
+        "502":
+          description: Add task failed
+          schema:
+            $ref: '#/definitions/tasks.ErrorResponse'
+      summary: Add task
       tags:
-      - todo
-  /todo/delete:
+      - tasks
+  /task/delete:
     delete:
       consumes:
       - application/json
-      description: Delete todo from database with data which contains id
-      responses: {}
-      summary: Delete todo
+      description: Delete task from database with data which contains id
+      parameters:
+      - description: Task identifer
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tasks.TaskResponse'
+        "400":
+          description: Non-valid data
+          schema:
+            $ref: '#/definitions/tasks.ErrorResponse'
+        "502":
+          description: Delete task failed
+          schema:
+            $ref: '#/definitions/tasks.ErrorResponse'
+      summary: Delete task
       tags:
-      - todo
-  /todo/done:
+      - tasks
+  /task/done:
     get:
       consumes:
       - application/json
-      description: Get todos which marked as done
-      responses: {}
-      summary: Get done todos
+      description: Get tasks which marked as done
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tasks.TaskResponse'
+        "502":
+          description: Get done tasks failed
+          schema:
+            $ref: '#/definitions/tasks.ErrorResponse'
+      summary: Get done tasks
       tags:
-      - todo
+      - tasks
     put:
       consumes:
       - application/json
-      description: Mark todo as done with data which contains id
-      responses: {}
-      summary: Done todo
+      description: Mark task as done with data which contains id
+      parameters:
+      - description: Task indentifer
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tasks.TaskResponse'
+        "400":
+          description: Non-valid data
+          schema:
+            $ref: '#/definitions/tasks.ErrorResponse'
+        "502":
+          description: Mark task as done failed
+          schema:
+            $ref: '#/definitions/tasks.ErrorResponse'
+      summary: Done task
       tags:
-      - todo
-  /todo/notDone:
+      - tasks
+  /task/notDone:
     get:
       consumes:
       - application/json
-      description: Get todos which not marked as done
-      responses: {}
-      summary: Get not done todos
+      description: Get tasks which not marked as done
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tasks.TaskResponse'
+        "502":
+          description: Get not done tasks failed
+          schema:
+            $ref: '#/definitions/tasks.ErrorResponse'
+      summary: Get not done tasks
       tags:
-      - todo
+      - tasks
 swagger: "2.0"

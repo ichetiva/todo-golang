@@ -19,93 +19,279 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/todo": {
+        "/task": {
             "get": {
-                "description": "Get todo from database",
+                "description": "Get task from database",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "todo"
+                    "tasks"
                 ],
-                "summary": "Get todo",
-                "responses": {}
+                "summary": "Get task",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Task identifer",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.TaskResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Get task failed",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
-        "/todo/all": {
+        "/task/all": {
             "get": {
-                "description": "Get all todos from database",
+                "description": "Get all tasks from database",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "todo"
+                    "tasks"
                 ],
-                "summary": "Get all todos",
-                "responses": {}
+                "summary": "Get all tasks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.TaskResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Get all tasks failed",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
-        "/todo/create": {
+        "/task/create": {
             "post": {
-                "description": "Add todo to database with data which contains content",
+                "description": "Add task to database with data which contains content",
                 "consumes": [
                     "application/json"
                 ],
-                "tags": [
-                    "todo"
+                "produces": [
+                    "application/json"
                 ],
-                "summary": "Add todo",
-                "responses": {}
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Add task",
+                "parameters": [
+                    {
+                        "description": "Task content",
+                        "name": "content",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.TaskResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Non-valid data",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Add task failed",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
-        "/todo/delete": {
+        "/task/delete": {
             "delete": {
-                "description": "Delete todo from database with data which contains id",
+                "description": "Delete task from database with data which contains id",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "todo"
+                    "tasks"
                 ],
-                "summary": "Delete todo",
-                "responses": {}
+                "summary": "Delete task",
+                "parameters": [
+                    {
+                        "description": "Task identifer",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.TaskResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Non-valid data",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Delete task failed",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
-        "/todo/done": {
+        "/task/done": {
             "get": {
-                "description": "Get todos which marked as done",
+                "description": "Get tasks which marked as done",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "todo"
+                    "tasks"
                 ],
-                "summary": "Get done todos",
-                "responses": {}
+                "summary": "Get done tasks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.TaskResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Get done tasks failed",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.ErrorResponse"
+                        }
+                    }
+                }
             },
             "put": {
-                "description": "Mark todo as done with data which contains id",
+                "description": "Mark task as done with data which contains id",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "todo"
+                    "tasks"
                 ],
-                "summary": "Done todo",
-                "responses": {}
+                "summary": "Done task",
+                "parameters": [
+                    {
+                        "description": "Task indentifer",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.TaskResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Non-valid data",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Mark task as done failed",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
-        "/todo/notDone": {
+        "/task/notDone": {
             "get": {
-                "description": "Get todos which not marked as done",
+                "description": "Get tasks which not marked as done",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "todo"
+                    "tasks"
                 ],
-                "summary": "Get not done todos",
-                "responses": {}
+                "summary": "Get not done tasks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.TaskResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Get not done tasks failed",
+                        "schema": {
+                            "$ref": "#/definitions/tasks.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "tasks.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "tasks.Task": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "done": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "tasks.TaskResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/tasks.Task"
+                }
             }
         }
     }

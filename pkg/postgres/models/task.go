@@ -2,7 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
-type Todo struct {
+type Task struct {
 	gorm.Model
 	Content string
 	Done    bool

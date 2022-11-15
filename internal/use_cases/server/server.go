@@ -34,7 +34,7 @@ func (s *Server) Run(cfg *config.Config) error {
 	if err != nil {
 		return err
 	}
-	db.AutoMigrate(&models.Todo{})
+	db.AutoMigrate(&models.Task{})
 
 	err = server.ListenAndServe()
 	if err != nil {
@@ -50,9 +50,9 @@ func (s *Server) GetRouter(cfg *config.Config) *mux.Router {
 			httpSwagger.URL(fmt.Sprintf("http://%s:%s/swagger/doc.json", cfg.App.Host, cfg.App.Port)),
 			httpSwagger.DeepLinking(true),
 			httpSwagger.DocExpansion("none"),
-			httpSwagger.DomID("#swagger-ui"),
+			httpSwagger.DomID("swagger-ui"),
 		),
 	).Methods(http.MethodGet)
-	routes.TodoRoute(router, cfg)
+	routes.TaskRoute(router, cfg)
 	return router
 }
