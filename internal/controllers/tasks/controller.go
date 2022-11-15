@@ -190,7 +190,7 @@ func (c *Controller) GetTask(w http.ResponseWriter, r *http.Request) {
 // @tags        tasks
 // @accept      json
 // @router      /task/all [get]
-// @success 	200 {object} TaskResponse
+// @success 	200 {object} TaskListResponse
 // @Failure 	502 {object} ErrorResponse "Get all tasks failed"
 func (c *Controller) GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -231,7 +231,7 @@ func (c *Controller) GetAllTasks(w http.ResponseWriter, r *http.Request) {
 // @tags        tasks
 // @accept      json
 // @router      /task/done [get]
-// @success 	200 {object} TaskResponse
+// @success 	200 {object} TaskListResponse
 // @Failure 	502 {object} ErrorResponse "Get done tasks failed"
 func (c *Controller) GetDoneTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -272,7 +272,7 @@ func (c *Controller) GetDoneTasks(w http.ResponseWriter, r *http.Request) {
 // @tags        tasks
 // @accept      json
 // @router      /task/notDone [get]
-// @success 	200 {object} TaskResponse
+// @success 	200 {object} TaskListResponse
 // @Failure 	502 {object} ErrorResponse "Get not done tasks failed"
 func (c *Controller) GetNotDoneTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")

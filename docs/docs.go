@@ -68,7 +68,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tasks.TaskResponse"
+                            "$ref": "#/definitions/tasks.TaskListResponse"
                         }
                     },
                     "502": {
@@ -183,7 +183,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tasks.TaskResponse"
+                            "$ref": "#/definitions/tasks.TaskListResponse"
                         }
                     },
                     "502": {
@@ -250,7 +250,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tasks.TaskResponse"
+                            "$ref": "#/definitions/tasks.TaskListResponse"
                         }
                     },
                     "502": {
@@ -283,6 +283,17 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "tasks.TaskListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/tasks.Task"
+                    }
                 }
             }
         },

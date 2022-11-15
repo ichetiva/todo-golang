@@ -45,6 +45,7 @@ func (s *Server) Run(cfg *config.Config) error {
 
 func (s *Server) GetRouter(cfg *config.Config) *mux.Router {
 	router := mux.NewRouter()
+	// Swagger setting
 	router.PathPrefix("/swagger/").Handler(
 		httpSwagger.Handler(
 			httpSwagger.URL(fmt.Sprintf("http://%s:%s/swagger/doc.json", cfg.App.Host, cfg.App.Port)),
@@ -53,6 +54,15 @@ func (s *Server) GetRouter(cfg *config.Config) *mux.Router {
 			httpSwagger.DomID("swagger-ui"),
 		),
 	).Methods(http.MethodGet)
+
+	// Redirect to swagger
+	router.HandleFunc(
+		"/", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/swagger/index.html", http.StatusSeeOther)
+		},
+	)
+
+	// Tasks route
 	routes.TaskRoute(router, cfg)
 	return router
 }

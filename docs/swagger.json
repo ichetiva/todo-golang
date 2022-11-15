@@ -61,7 +61,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tasks.TaskResponse"
+                            "$ref": "#/definitions/tasks.TaskListResponse"
                         }
                     },
                     "502": {
@@ -176,7 +176,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tasks.TaskResponse"
+                            "$ref": "#/definitions/tasks.TaskListResponse"
                         }
                     },
                     "502": {
@@ -243,7 +243,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tasks.TaskResponse"
+                            "$ref": "#/definitions/tasks.TaskListResponse"
                         }
                     },
                     "502": {
@@ -276,6 +276,17 @@
                 },
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "tasks.TaskListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/tasks.Task"
+                    }
                 }
             }
         },

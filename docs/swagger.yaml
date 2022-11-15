@@ -14,6 +14,13 @@ definitions:
       id:
         type: integer
     type: object
+  tasks.TaskListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/tasks.Task'
+        type: array
+    type: object
   tasks.TaskResponse:
     properties:
       data:
@@ -60,7 +67,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/tasks.TaskResponse'
+            $ref: '#/definitions/tasks.TaskListResponse'
         "502":
           description: Get all tasks failed
           schema:
@@ -135,7 +142,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/tasks.TaskResponse'
+            $ref: '#/definitions/tasks.TaskListResponse'
         "502":
           description: Get done tasks failed
           schema:
@@ -179,7 +186,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/tasks.TaskResponse'
+            $ref: '#/definitions/tasks.TaskListResponse'
         "502":
           description: Get not done tasks failed
           schema:
