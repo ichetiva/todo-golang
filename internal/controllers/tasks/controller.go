@@ -2,11 +2,14 @@ package tasks
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/ichetiva/todo-golang/config"
+	"github.com/ichetiva/todo-golang/internal/use_cases/misc"
 	"github.com/ichetiva/todo-golang/pkg/postgres"
 	"github.com/ichetiva/todo-golang/pkg/postgres/models"
+	"gorm.io/gorm"
 )
 
 type Controller struct {
@@ -21,13 +24,23 @@ type Controller struct {
 // @router      /task/create [post]
 // @param 		content body string true "Task content"
 // @success 	200 {object} TaskResponse
-// @Failure 	400 {object} ErrorResponse "Non-valid data"
-// @Failure 	502 {object} ErrorResponse "Add task failed"
+// @failure 	400 {object} ErrorResponse "Non-valid data"
+// @failure 	403 {object} ErrorResponse "Non-valid session token"
+// @failure 	502 {object} ErrorResponse "Add task failed"
 func (c *Controller) AddTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var taskCreation TaskCreation
-	err := json.NewDecoder(r.Body).Decode(&taskCreation)
+	token, err := misc.GetTokenFromHeader(r.Header.Get("Authorization"))
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
+
+	var requestData TaskCreation
+	err = json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		data, _ := json.Marshal(map[string]interface{}{
@@ -45,9 +58,22 @@ func (c *Controller) AddTask(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(data))
 	}
 
+	var user User
+	result := db.Table("users").Select("users.id").Joins(
+		"left join sessions on sessions.user_refer = users.id",
+	).Where("sessions.token = ?", token).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
+
 	task := models.Task{
-		Content: taskCreation.Content,
-		Done:    false,
+		Content:   requestData.Content,
+		Done:      false,
+		UserRefer: user.ID,
 	}
 	db.Create(&task)
 	w.WriteHeader(http.StatusOK)
@@ -68,13 +94,24 @@ func (c *Controller) AddTask(w http.ResponseWriter, r *http.Request) {
 // @router      /task/done [put]
 // @param 		id body integer true "Task indentifer"
 // @success 	200 {object} TaskResponse
-// @Failure 	400 {object} ErrorResponse "Non-valid data"
-// @Failure 	502 {object} ErrorResponse "Mark task as done failed"
+// @failure 	400 {object} ErrorResponse "Non-valid data"
+// @failure 	403 {object} ErrorResponse "Non-valid session token"
+// @failure 	404 {object} ErrorResponse "Task not found"
+// @failure 	502 {object} ErrorResponse "Mark task as done failed"
 func (c *Controller) DoneTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var taskMarkDone TaskMarkDone
-	err := json.NewDecoder(r.Body).Decode(&taskMarkDone)
+	token, err := misc.GetTokenFromHeader(r.Header.Get("Authorization"))
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
+
+	var requestData TaskMarkDone
+	err = json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		data, _ := json.Marshal(map[string]interface{}{
@@ -92,8 +129,27 @@ func (c *Controller) DoneTask(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(data))
 	}
 
-	task := models.Task{}
-	db.First(&task, taskMarkDone.ID)
+	var user User
+	result := db.Table("users").Select("users.id").Joins(
+		"left join sessions on sessions.user_refer = users.id",
+	).Where("sessions.token = ?", token).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
+
+	var task models.Task
+	result = db.Where("id = ? and user_refer = ?", requestData.ID, user.ID).First(&task)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		w.WriteHeader(http.StatusNotFound)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Task not found",
+		})
+		_, _ = w.Write([]byte(data))
+	}
 	task.Done = true
 	db.Save(&task)
 
@@ -115,13 +171,23 @@ func (c *Controller) DoneTask(w http.ResponseWriter, r *http.Request) {
 // @router      /task/delete [delete]
 // @param 		id body integer true "Task identifer"
 // @success 	200 {object} TaskResponse
-// @Failure 	400 {object} ErrorResponse "Non-valid data"
-// @Failure 	502 {object} ErrorResponse "Delete task failed"
+// @failure 	400 {object} ErrorResponse "Non-valid data"
+// @failure 	403 {object} ErrorResponse "Non-valid session token"
+// @failure 	502 {object} ErrorResponse "Delete task failed"
 func (c *Controller) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var taskDeletion TaskDeletion
-	err := json.NewDecoder(r.Body).Decode(&taskDeletion)
+	token, err := misc.GetTokenFromHeader(r.Header.Get("Authorization"))
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
+
+	var requestData TaskDeletion
+	err = json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		data, _ := json.Marshal(map[string]interface{}{
@@ -139,7 +205,19 @@ func (c *Controller) DeleteTask(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(data))
 	}
 
-	db.Delete(&models.Task{}, taskDeletion.ID)
+	var user User
+	result := db.Table("users").Select("users.id").Joins(
+		"left join sessions on sessions.user_refer = users.id",
+	).Where("sessions.token = ?", token).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
+
+	db.Where("id = ? and user_refer = ?", requestData.ID, user.ID).Delete(&models.Task{})
 
 	data, _ := json.Marshal(map[string]interface{}{
 		"ok": true,
@@ -155,9 +233,20 @@ func (c *Controller) DeleteTask(w http.ResponseWriter, r *http.Request) {
 // @router      /task [get]
 // @param 		id query integer true "Task identifer"
 // @success 	200 {object} TaskResponse
-// @Failure 	502 {object} ErrorResponse "Get task failed"
+// @failure 	403 {object} ErrorResponse "Non-valid session token"
+// @failure 	404 {object} ErrorResponse "Task not found"
+// @failure 	502 {object} ErrorResponse "Get task failed"
 func (c *Controller) GetTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	token, err := misc.GetTokenFromHeader(r.Header.Get("Authorization"))
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
 
 	params := r.URL.Query()
 	id := params.Get("id")
@@ -171,8 +260,27 @@ func (c *Controller) GetTask(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(data))
 	}
 
+	var user User
+	result := db.Table("users").Select("users.id").Joins(
+		"left join sessions on sessions.user_refer = users.id",
+	).Where("sessions.token = ?", token).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
+
 	var task models.Task
-	db.First(&task, id)
+	result = db.Where("id = ? and user_refer = ?", id, user.ID).First(&task)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		w.WriteHeader(http.StatusNotFound)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Task not found",
+		})
+		_, _ = w.Write([]byte(data))
+	}
 
 	data, _ := json.Marshal(map[string]interface{}{
 		"data": Task{
@@ -191,9 +299,19 @@ func (c *Controller) GetTask(w http.ResponseWriter, r *http.Request) {
 // @accept      json
 // @router      /task/all [get]
 // @success 	200 {object} TaskListResponse
-// @Failure 	502 {object} ErrorResponse "Get all tasks failed"
+// @failure 	403 {object} ErrorResponse "Non-valid session token"
+// @failure 	502 {object} ErrorResponse "Get all tasks failed"
 func (c *Controller) GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	token, err := misc.GetTokenFromHeader(r.Header.Get("Authorization"))
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
 
 	db, err := postgres.GetDatabase(c.Config)
 	if err != nil {
@@ -204,8 +322,20 @@ func (c *Controller) GetAllTasks(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(data))
 	}
 
+	var user User
+	result := db.Table("users").Select("users.id").Joins(
+		"left join sessions on sessions.user_refer = users.id",
+	).Where("sessions.token = ?", token).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
+
 	var tasks []models.Task
-	db.Find(&tasks)
+	db.Where("user_refer = ?", user.ID).Find(&tasks)
 
 	var tasksResponse []Task
 	for i := 0; i < len(tasks); i++ {
@@ -232,9 +362,19 @@ func (c *Controller) GetAllTasks(w http.ResponseWriter, r *http.Request) {
 // @accept      json
 // @router      /task/done [get]
 // @success 	200 {object} TaskListResponse
-// @Failure 	502 {object} ErrorResponse "Get done tasks failed"
+// @failure 	403 {object} ErrorResponse "Non-valid session token"
+// @failure 	502 {object} ErrorResponse "Get done tasks failed"
 func (c *Controller) GetDoneTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	token, err := misc.GetTokenFromHeader(r.Header.Get("Authorization"))
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
 
 	db, err := postgres.GetDatabase(c.Config)
 	if err != nil {
@@ -245,8 +385,20 @@ func (c *Controller) GetDoneTasks(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(data))
 	}
 
+	var user User
+	result := db.Table("users").Select("users.id").Joins(
+		"left join sessions on sessions.user_refer = users.id",
+	).Where("sessions.token = ?", token).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
+
 	var tasks []models.Task
-	db.Where("done = ?", true).Find(&tasks)
+	db.Where("done = ? and user_refer = ?", true, user.ID).Find(&tasks)
 
 	var tasksResponse []Task
 	for i := 0; i < len(tasks); i++ {
@@ -273,9 +425,19 @@ func (c *Controller) GetDoneTasks(w http.ResponseWriter, r *http.Request) {
 // @accept      json
 // @router      /task/notDone [get]
 // @success 	200 {object} TaskListResponse
-// @Failure 	502 {object} ErrorResponse "Get not done tasks failed"
+// @failure 	403 {object} ErrorResponse "Non-valid session token"
+// @failure 	502 {object} ErrorResponse "Get not done tasks failed"
 func (c *Controller) GetNotDoneTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	token, err := misc.GetTokenFromHeader(r.Header.Get("Authorization"))
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
 
 	db, err := postgres.GetDatabase(c.Config)
 	if err != nil {
@@ -286,8 +448,20 @@ func (c *Controller) GetNotDoneTasks(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(data))
 	}
 
+	var user User
+	result := db.Table("users").Select("users.id").Joins(
+		"left join sessions on sessions.user_refer = users.id",
+	).Where("sessions.token = ?", token).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		w.WriteHeader(http.StatusForbidden)
+		data, _ := json.Marshal(map[string]interface{}{
+			"message": "Non-valid session token",
+		})
+		_, _ = w.Write([]byte(data))
+	}
+
 	var tasks []models.Task
-	db.Where("done = ?", false).Find(&tasks)
+	db.Where("done = ? and user_refer = ?", false, user.ID).Find(&tasks)
 
 	var tasksResponse []Task
 	for i := 0; i < len(tasks); i++ {

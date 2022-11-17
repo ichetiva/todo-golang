@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ichetiva/todo-golang/config"
 	"github.com/ichetiva/todo-golang/internal/controllers/tasks"
+	"github.com/ichetiva/todo-golang/internal/controllers/users"
 )
 
 func TaskRoute(router *mux.Router, cfg *config.Config) {
@@ -41,4 +42,17 @@ func TaskRoute(router *mux.Router, cfg *config.Config) {
 	router.HandleFunc(
 		"/api/v1/task/delete", controller.DeleteTask,
 	).Methods(http.MethodDelete)
+}
+
+func UserRoute(router *mux.Router, cfg *config.Config) {
+	controller := users.Controller{
+		Config: cfg,
+	}
+
+	router.HandleFunc(
+		"/api/v1/user/create", controller.CreateUser,
+	).Methods(http.MethodPost)
+	router.HandleFunc(
+		"/api/v1/user/authorizate", controller.AuthorizationUser,
+	).Methods(http.MethodPost)
 }

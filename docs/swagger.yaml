@@ -26,6 +26,27 @@ definitions:
       data:
         $ref: '#/definitions/tasks.Task'
     type: object
+  users.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  users.User:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  users.UserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/users.User'
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -194,4 +215,40 @@ paths:
       summary: Get not done tasks
       tags:
       - tasks
+  /user/create:
+    post:
+      consumes:
+      - application/json
+      description: Create user to database with data which contains username and password
+      parameters:
+      - description: Your future username
+        in: body
+        name: username
+        required: true
+        schema:
+          type: string
+      - description: Your future password
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserResponse'
+        "400":
+          description: Non-valid password
+          schema:
+            $ref: '#/definitions/users.ErrorResponse'
+        "502":
+          description: Create user failed
+          schema:
+            $ref: '#/definitions/users.ErrorResponse'
+      summary: Create user
+      tags:
+      - users
 swagger: "2.0"

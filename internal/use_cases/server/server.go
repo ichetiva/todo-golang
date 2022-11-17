@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -21,6 +22,8 @@ type Server struct {
 }
 
 func (s *Server) Run(cfg *config.Config) error {
+	log.Println("Preparing to start")
+
 	router := s.GetRouter(cfg)
 
 	server := &http.Server{
@@ -30,12 +33,16 @@ func (s *Server) Run(cfg *config.Config) error {
 		WriteTimeout: s.WriteTimeout,
 	}
 
+	log.Println("Run migrations")
 	db, err := postgres.GetDatabase(cfg)
 	if err != nil {
 		return err
 	}
 	db.AutoMigrate(&models.Task{})
+	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Session{})
 
+	log.Printf("Running on http://%s:%s\n", cfg.App.Host, cfg.App.Port)
 	err = server.ListenAndServe()
 	if err != nil {
 		return err
@@ -64,5 +71,8 @@ func (s *Server) GetRouter(cfg *config.Config) *mux.Router {
 
 	// Tasks route
 	routes.TaskRoute(router, cfg)
+	// User route
+	routes.UserRoute(router, cfg)
+
 	return router
 }

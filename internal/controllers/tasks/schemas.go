@@ -29,3 +29,7 @@ type TaskListResponse struct {
 type ErrorResponse struct {
 	Message string `json:"message"`
 }
+
+type User struct {
+	ID uint
+}

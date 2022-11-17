@@ -254,6 +254,61 @@
                     }
                 }
             }
+        },
+        "/user/create": {
+            "post": {
+                "description": "Create user to database with data which contains username and password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create user",
+                "parameters": [
+                    {
+                        "description": "Your future username",
+                        "name": "username",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Your future password",
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Non-valid password",
+                        "schema": {
+                            "$ref": "#/definitions/users.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Create user failed",
+                        "schema": {
+                            "$ref": "#/definitions/users.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -295,6 +350,39 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/tasks.Task"
+                }
+            }
+        },
+        "users.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.User": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.UserResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/users.User"
                 }
             }
         }
